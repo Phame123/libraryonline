@@ -2,11 +2,13 @@
 import React, { useState, useEffect } from "react";
 import { AiOutlineMenu, AiOutlineClose } from "react-icons/ai";
 import { FaShoppingCart } from "react-icons/fa";
+import { Link, useNavigate } from "react-router-dom";
 
-import { Link } from "react-router-dom";
 
 const Navbar = () => {
   const [nav, setNav] = useState(false);
+  const router = useNavigate();
+ 
 
 
   
@@ -15,17 +17,26 @@ const Navbar = () => {
       <div class="container mx-auto flex  p-5  items-center justify-between">
         <div class="flex title-font font-medium items-center text-gray-900  md:mb-0">
           <h2 class="ml-3 text-2xl italic ">
+
             TheLib
           </h2>
         </div>
     
-        <div>
-          <button class="inline-flex items-center bg-gray-100 border-0 py-1 px-3 focus:outline-none hover:bg-gray-200 rounded text-base mt-4 md:mt-0 mr-4">
-            Sign In
+        <div> 
+          {
+
+          }
+          <Link to={'/books'}>
+          
+          <button class="inline-flex items-center bg-gray-900 border-0 py-1 px-3 focus:outline-none hover:bg-gray-200 text-white hover:text-black rounded text-base mt-4 md:mt-0 mr-4">
+
+          Find Books
           </button>
-          <button class="inline-flex items-center bg-gray-100 border-0 py-1 px-3 focus:outline-none hover:bg-gray-200 rounded text-base mt-4 md:mt-0">
-            Sign Up
-          </button>
+          </Link>
+        
+        
+          
+        
         </div></div>
       
     </header>
