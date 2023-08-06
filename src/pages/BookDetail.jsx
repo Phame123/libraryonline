@@ -3,10 +3,25 @@ import React, { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom';
 import { db } from '../firebase/config';
 
+import {
+  Button,
+  Dialog,
+  DialogHeader,
+  DialogBody,
+  DialogFooter,
+  Input,
+} from "@material-tailwind/react";
+
+
+
 const BookDetail = () => {
   const {id} = useParams();
   const [book, setBook] = useState(null);
   const [loading, setLoading] = useState(false);
+   const [open, setOpen] = React.useState(false);
+
+   const handleOpen = () => setOpen(!open);
+
   //fetch book from firestore using title
 
 useEffect(() => {
@@ -56,27 +71,23 @@ console.log(book);
                     <span class="text-gray-600 ml-3">{book?.category}</span>
                   </span>
                   <span class="flex ml-3 pl-3 py-2 border-l-2 border-gray-200 space-x-2s">
-                  ISBN:  {book?.ISBN}
+                    ISBN: {book?.ISBN}
                   </span>
                 </div>
                 <div class="flex mb-4">
                   <span class="flex items-center">
                     <span class="text-gray-600 ml-3">
-                       Book location:
-                      {book?.location}</span>
+                      Book location:
+                      {book?.location}
+                    </span>
                   </span>
                   <span class="flex ml-3 pl-3 py-2 border-l-2 border-gray-200 space-x-2s">
-                    Copies:{
-                      book?.copies > 0 ? (
-                        <h2>
-                          {book?.copies}
-                        </h2>
-                      ) : (
-                        <h2>
-                          Book not available
-                        </h2>
-                      )
-                    }
+                    Copies:
+                    {book?.copies > 0 ? (
+                      <h2>{book?.copies}</h2>
+                    ) : (
+                      <h2>Book not available</h2>
+                    )}
                   </span>
                 </div>
                 <p class="leading-relaxed">{book?.description}</p>
@@ -85,6 +96,9 @@ console.log(book);
                     <span class="mr-3">Pages {book?.pages}</span>
                   </div>
                 </div>
+                <Button onClick={handleOpen} variant="black" className='bg-black'>
+                Borrow Book 
+                </Button>
                 {/* <div class="flex">
                 <span class="title-font font-medium text-2xl text-gray-900">
                   $58.00
@@ -110,6 +124,51 @@ console.log(book);
           </div>
         )}
       </section>
+      <>
+        <Dialog open={open} handler={handleOpen}>
+          <DialogHeader>
+            Fill this form to borrow a copy of this book.
+          </DialogHeader>
+          <DialogBody divider>
+            <form>
+              <label htmlFor="name">Name</label>
+              <Input type="text" placeholder="Name" />
+              <label htmlFor="email">Email</label>
+              <Input type="email" placeholder="Email" />
+              <label htmlFor="phone">Phone</label>
+              <Input type="text" placeholder="Phone" />
+              <label htmlFor="address">Address</label>
+              <Input type="text" placeholder="Address" />
+
+              <label htmlFor="date">Date</label>
+              <Input type="date" placeholder="Date" />
+
+              <label htmlFor="date">Return Date</label>
+              <Input type="date" placeholder="Return Date" />
+
+              
+
+             
+
+           
+        
+            </form>
+   </DialogBody>
+          <DialogFooter>
+            <Button
+              variant="text"
+              color="red"
+              onClick={handleOpen}
+              className="mr-1"
+            >
+              <span>Cancel</span>
+            </Button>
+            <Button variant="gradient" color="green" type='submit'>
+              <span>Confirm</span>
+            </Button>
+          </DialogFooter>
+        </Dialog>
+      </>
     </div>
   );
 }
