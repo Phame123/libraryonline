@@ -96,6 +96,7 @@ const BookDetail = () => {
 
 
 
+
   return (
     <div>
       <section class="text-gray-600 body-font overflow-hidden">
@@ -146,13 +147,25 @@ const BookDetail = () => {
                     <span class="mr-3">Pages {book?.pages}</span>
                   </div>
                 </div>
-                <Button
+                {
+                  currentUser?(
+ <Button
                   onClick={handleOpen}
                   variant="black"
                   className="bg-black"
                 >
                   Borrow Book
                 </Button>
+        ): <Button
+                  onClick={() => alert("Login to borrow book")}
+                  variant="black"
+                  className="bg-black"
+                >
+                  Login to Borrow Book
+                </Button>
+  
+                }
+               
               </div>
             </div>
           </div>
@@ -184,6 +197,12 @@ const BookDetail = () => {
               />
 
               <DialogFooter>
+               
+                <Button variant="gradient" color="green" type="submit">
+                  <span>Borrow</span>
+                </Button>
+
+                
                 <Button
                   variant="text"
                   color="red"
@@ -191,10 +210,8 @@ const BookDetail = () => {
                   className="mr-1"
                 >
                   <span>Cancel</span>
-                </Button>
-                <Button variant="gradient" color="green" type="submit">
-                  <span>Borrow</span>
-                </Button>
+                  </Button>
+
               </DialogFooter>
             </form>
           </DialogBody>
