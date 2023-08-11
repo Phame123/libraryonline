@@ -83,7 +83,7 @@ const BookDetail = () => {
        //const borrowHistoryRef = doc(db, "borrowHistory"); // Assuming "borrowHistory" is your collection name
        //await setDoc(borrowHistoryRef, borrowerData);
 
-       alert("Book borrowed successfully");
+       alert("Book borrowed successfully. You have 72 hours to return it");
         setOpen(false);
      } else {
        alert("Book not available");
