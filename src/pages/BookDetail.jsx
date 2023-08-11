@@ -1,7 +1,7 @@
-import { doc, getDoc } from 'firebase/firestore';
-import React, { useEffect, useState } from 'react'
-import { useParams } from 'react-router-dom';
-import { db } from '../firebase/config';
+import { doc, getDoc, updateDoc, setDoc, arrayUnion, addDoc, collection } from "firebase/firestore";
+import React, { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import { db } from "../firebase/config";
 
 import {
   Button,
@@ -12,38 +12,88 @@ import {
   Input,
 } from "@material-tailwind/react";
 
-
-
 const BookDetail = () => {
-  const {id} = useParams();
+  const { id } = useParams();
   const [book, setBook] = useState(null);
   const [loading, setLoading] = useState(false);
-   const [open, setOpen] = React.useState(false);
+  const [open, setOpen] = React.useState(false);
+  const [currentUser, setCurrentUser] = useState(null);
 
-   const handleOpen = () => setOpen(!open);
+  const [address, setAddress] = useState("")
+  const [fullName,setFullName] = useState("")
+
+  const handleOpen = () => setOpen(!open);
+
+  //fetch data from localstorage
+  useEffect(() => {
+    const user = JSON.parse(localStorage.getItem("user"));
+    setCurrentUser(user);
+  }, []);
+
 
   //fetch book from firestore using title
 
-useEffect(() => {
-  const getBook = async () => {
-    try {
-      const docRef = doc(db, "books", id);
-      const docSnap = await getDoc(docRef);
-      setBook(docSnap.data());
-      setLoading(false); // Set loading to false once the data is retrieved
-      console.log(docSnap.data());
-    } catch (err) {
-      console.log(err);
-      setLoading(false); // Set loading to false if there's an error as well
-    }
-  };
+  useEffect(() => {
+    const getBook = async () => {
+      try {
+        const docRef = doc(db, "books", id);
+        const docSnap = await getDoc(docRef);
+        setBook(docSnap.data());
+        setLoading(false); // Set loading to false once the data is retrieved
+        console.log(docSnap.data());
+      } catch (err) {
+        console.log(err);
+        setLoading(false); // Set loading to false if there's an error as well
+      }
+    };
+
+    getBook();
+  }, [id]);
+
+  console.log(book);
+
+ const handleBorrow = async (e) => {
+   e.preventDefault();
+   try {
+     const docRef = doc(db, "books", id);
+     const docSnap = await getDoc(docRef);
+     const book = docSnap.data();
+     if (book.copies > 0) {
+       await updateDoc(docRef, {
+         copies: book.copies - 1,
+       });
+
+       // Borrower's information
+       const borrowerData = {
+         // Change to the actual user's UID
+         // Change to the actual book's ID
+         borrowedAt: new Date(),
+
+         //return date is 72 hours after current date
+
+         name: fullName,
+         email: currentUser.email,
+         phone: currentUser.phone,
+         address: address,
+         author: book.author,
+         borrowedAt: new Date(),
+         returnDate: new Date(Date.now() + 72 * 60 * 60 * 1000), // 72 hours in milliseconds
+       };
+
+       //const borrowHistoryRef = doc(db, "borrowHistory"); // Assuming "borrowHistory" is your collection name
+       //await setDoc(borrowHistoryRef, borrowerData);
+
+       alert("Book borrowed successfully");
+        setOpen(false);
+     } else {
+       alert("Book not available");
+     }
+   } catch (err) {
+     console.log(err);
+   }
+ };
 
 
-  getBook();
-  
-}, [id]);
-
-console.log(book);
 
 
   return (
@@ -96,29 +146,13 @@ console.log(book);
                     <span class="mr-3">Pages {book?.pages}</span>
                   </div>
                 </div>
-                <Button onClick={handleOpen} variant="black" className='bg-black'>
-                Borrow Book 
+                <Button
+                  onClick={handleOpen}
+                  variant="black"
+                  className="bg-black"
+                >
+                  Borrow Book
                 </Button>
-                {/* <div class="flex">
-                <span class="title-font font-medium text-2xl text-gray-900">
-                  $58.00
-                </span>
-                <button class="flex ml-auto text-white bg-indigo-500 border-0 py-2 px-6 focus:outline-none hover:bg-indigo-600 rounded">
-                  Button
-                </button>
-                <button class="rounded-full w-10 h-10 bg-gray-200 p-0 border-0 inline-flex items-center justify-center text-gray-500 ml-4">
-                  <svg
-                    fill="currentColor"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    class="w-5 h-5"
-                    viewBox="0 0 24 24"
-                  >
-                    <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"></path>
-                  </svg>
-                </button>
-              </div> */}
               </div>
             </div>
           </div>
@@ -130,47 +164,44 @@ console.log(book);
             Fill this form to borrow a copy of this book.
           </DialogHeader>
           <DialogBody divider>
-            <form>
-              <label htmlFor="name">Name</label>
-              <Input type="text" placeholder="Name" />
-              <label htmlFor="email">Email</label>
-              <Input type="email" placeholder="Email" />
-              <label htmlFor="phone">Phone</label>
-              <Input type="text" placeholder="Phone" />
+            <form onSubmit={handleBorrow}>
+              <label htmlFor="name">Full Name</label>
+              <Input
+                type="text"
+                placeholder="Name"
+                value={fullName}
+                onChange={(e) => setFullName(e.target.value)}
+                required
+              />
+
               <label htmlFor="address">Address</label>
-              <Input type="text" placeholder="Address" />
+              <Input
+              value={address}
+                onChange={(e) => setAddress(e.target.value)}
+                type="text"
+                placeholder="Address"
+                required
+              />
 
-              <label htmlFor="date">Date</label>
-              <Input type="date" placeholder="Date" />
-
-              <label htmlFor="date">Return Date</label>
-              <Input type="date" placeholder="Return Date" />
-
-              
-
-             
-
-           
-        
+              <DialogFooter>
+                <Button
+                  variant="text"
+                  color="red"
+                  onClick={handleOpen}
+                  className="mr-1"
+                >
+                  <span>Cancel</span>
+                </Button>
+                <Button variant="gradient" color="green" type="submit">
+                  <span>Borrow</span>
+                </Button>
+              </DialogFooter>
             </form>
-   </DialogBody>
-          <DialogFooter>
-            <Button
-              variant="text"
-              color="red"
-              onClick={handleOpen}
-              className="mr-1"
-            >
-              <span>Cancel</span>
-            </Button>
-            <Button variant="gradient" color="green" type='submit'>
-              <span>Confirm</span>
-            </Button>
-          </DialogFooter>
+          </DialogBody>
         </Dialog>
       </>
     </div>
   );
-}
+};
 
-export default BookDetail
+export default BookDetail;

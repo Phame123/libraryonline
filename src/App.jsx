@@ -6,7 +6,7 @@ import { BrowserRouter, Routes, Route, useNavigate } from "react-router-dom";
 import Home from './pages/Home'
 import BookDetail from './pages/BookDetail';
 import Books from './pages/Books';
-import { Login } from './pages/Login';
+import  { Login } from './pages/Login';
 import { Register } from './pages/Register';
 //import BookList from './components/BookList'
 

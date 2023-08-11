@@ -1,15 +1,45 @@
 //import { Navbar } from "@material-tailwind/react";
+import { signOut } from "firebase/auth";
 import React, { useState, useEffect } from "react";
 import { AiOutlineMenu, AiOutlineClose } from "react-icons/ai";
 import { FaShoppingCart } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
+import { auth } from "../firebase/config";
 
 
 const Navbar = () => {
   const [nav, setNav] = useState(false);
   const router = useNavigate();
- 
+  const [user, setUser] = useState(null);
 
+  useEffect(() => {
+    const user = localStorage.getItem("user");
+    if (user) {
+      setUser(JSON.parse(user));
+    }
+  }, []);
+
+ 
+ const handleLogout = () => {
+   
+
+  setUser(null);
+  signOut(auth)
+    .then(() => {
+
+  alert("Logout Successfull");
+  //remove user from localstorage
+  localStorage.removeItem("user");
+  
+    }
+    )
+    .catch((error) => {
+      alert(error.message);
+    }
+
+    );
+ }
+    
 
   
   return (
@@ -20,14 +50,43 @@ const Navbar = () => {
         </div>
 
         <div>
-          {}
-          <Link to={"/books"}>
-            <button class="inline-flex items-center bg-gray-400 border-0 py-1 px-3 focus:outline-none hover:bg-gray-200 text-black hover:text-black rounded text-base mt-4 md:mt-0 mr-4">
-              Find Books
-            </button>
-          </Link>
+          {user ? (
+            <div className="flex">
+              <div>
+                <button
+                  onClick={handleLogout}
+                  class="inline-flex items-center bg-gray-900 border-0 py-1 px-3 focus:outline-none hover:bg-gray-200 text-white hover:text-black rounded text-base mt-4 md:mt-0 mr-4"
+                >
+                  Logout
+                </button>
+              </div>
+              <Link to={"/books"}>
+                <button class="inline-flex items-center bg-gray-400 border-0 py-1 px-3 focus:outline-none hover:bg-gray-200 text-black hover:text-black rounded text-base mt-4 md:mt-0 mr-4">
+                  Find Books
+                </button>
+              </Link>
+            </div>
+          ) : (
+            <div>
+              <Link to={"/books"}>
+                <button class="inline-flex items-center bg-gray-400 border-0 py-1 px-3 focus:outline-none hover:bg-gray-200 text-black hover:text-black rounded text-base mt-4 md:mt-0 mr-4">
+                  Find Books
+                </button>
+              </Link>
+              <Link to={"/login"}>
+                <button class="inline-flex items-center  border-0 py-1 px-3 focus:outline-none hover:bg-gray-200 text-black hover:text-black rounded text-base mt-4 md:mt-0 mr-4">
+                  Login
+                </button>
+              </Link>
+              <Link to={"/register"}>
+                <button class="inline-flex items-center bg-gray-900 border-0 py-1 px-3 focus:outline-none hover:bg-gray-200 text-white hover:text-black rounded text-base mt-4 md:mt-0 mr-4">
+                  Register
+                </button>
+              </Link>
+            </div>
+          )}
 
-          <Link to={"/login"}>
+          {/* <Link to={"/login"}>
             <button class="inline-flex items-center  border-0 py-1 px-3 focus:outline-none hover:bg-gray-200 text-black hover:text-black rounded text-base mt-4 md:mt-0 mr-4">
             Login
             </button>
@@ -36,8 +95,7 @@ const Navbar = () => {
             <button class="inline-flex items-center bg-gray-900 border-0 py-1 px-3 focus:outline-none hover:bg-gray-200 text-white hover:text-black rounded text-base mt-4 md:mt-0 mr-4">
             Register
             </button>
-          </Link>
-
+          </Link> */}
         </div>
       </div>
     </header>
