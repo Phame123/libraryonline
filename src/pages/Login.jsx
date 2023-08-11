@@ -107,7 +107,7 @@ export function Login() {
           <Typography color="white" className="mt-4 text-center font-normal">
             Don't have an account?{" "}
             <Link
-              to={"/"}
+              to={"/register"}
               className="font-medium text-white transition-colors hover:text-blue-700"
             >
               Sign Up
