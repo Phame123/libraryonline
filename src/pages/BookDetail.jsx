@@ -1,4 +1,4 @@
-import { doc, getDoc, updateDoc, setDoc, arrayUnion, addDoc, collection } from "firebase/firestore";
+import { doc, getDoc, updateDoc, setDoc, arrayUnion, addDoc, collection, onSnapshot } from "firebase/firestore";
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { db } from "../firebase/config";
@@ -33,22 +33,22 @@ const BookDetail = () => {
 
   //fetch book from firestore using title
 
-  useEffect(() => {
-    const getBook = async () => {
-      try {
-        const docRef = doc(db, "books", id);
-        const docSnap = await getDoc(docRef);
-        setBook(docSnap.data());
-        setLoading(false); // Set loading to false once the data is retrieved
-        console.log(docSnap.data());
-      } catch (err) {
-        console.log(err);
-        setLoading(false); // Set loading to false if there's an error as well
-      }
-    };
+ useEffect(() => {
+   const unsubscribe = onSnapshot(doc(db, "books", id), (docSnap) => {
+     if (docSnap.exists()) {
+       setBook(docSnap.data());
+     } else {
+       // Handle case where the document doesn't exist
+       setBook(null);
+     }
+     setLoading(false); // Set loading to false once the data is retrieved
+   });
 
-    getBook();
-  }, [id]);
+   return () => {
+     // Unsubscribe from the snapshot listener when the component unmounts
+     unsubscribe();
+   };
+ }, [id]);
 
   console.log(book);
 
