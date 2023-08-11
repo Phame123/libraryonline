@@ -95,10 +95,11 @@ export function Register() {
             <Input
               placeholder=""
               required
+              type="email"
               size="lg"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              label="Name"
+              label="Email"
               className="text-white"
             />
             <Input
