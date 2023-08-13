@@ -38,7 +38,6 @@ const BookDetail = () => {
     setCurrentUser(user);
   }, []);
 
- // console.log('this',currentUser.email);
 
   //fetch book from firestore using title
 
@@ -60,6 +59,7 @@ const BookDetail = () => {
  }, [id]);
 
   console.log(book);
+  console.log()
 
  const handleBorrow = async (e) => {
    e.preventDefault();
@@ -130,6 +130,7 @@ const BookDetail = () => {
                 </h1>
                 <div class="flex mb-4">
                   <span class="flex items-center">
+                    Category:
                     <span class="text-gray-600 ml-3">{book?.category}</span>
                   </span>
                   <span class="flex ml-3 pl-3 py-2 border-l-2 border-gray-200 space-x-2s">
@@ -137,12 +138,7 @@ const BookDetail = () => {
                   </span>
                 </div>
                 <div class="flex mb-4">
-                  <span class="flex items-center">
-                    <span class="text-gray-600 ml-3">
-                      Book location:
-                      {book?.location}
-                    </span>
-                  </span>
+                  
                   <span class="flex ml-3 pl-3 py-2 border-l-2 border-gray-200 space-x-2s">
                     Copies:
                     {book?.copies > 0 ? (
@@ -158,25 +154,36 @@ const BookDetail = () => {
                     <span class="mr-3">Pages {book?.pages}</span>
                   </div>
                 </div>
-                {
-                  currentUser?(
- <Button
-                  onClick={handleOpen}
-                  variant="black"
-                  className="bg-black"
-                >
-                  Borrow Book
-                </Button>
-        ): <Button
-                  onClick={() => alert("Login to borrow book")}
-                  variant="black"
-                  className="bg-black"
-                >
-                  Login to Borrow Book
-                </Button>
-  
-                }
-               
+
+                {currentUser ? (
+                  <Button
+                    onClick={handleOpen}
+                    variant="black"
+                    className="bg-black"
+                    disabled={book?.copies < 1}
+                  >
+                    {
+                      book?.copies < 1 ? (
+                        <span>Book not available</span>
+                      ) : (
+                        <span>Borrow</span> 
+                      )
+                    }
+
+
+                  </Button>
+                ) : (
+                  <Button
+                    variant="black"
+                    className="bg-black"
+                    onClick={() => alert("Please login to borrow a book")}
+                  >
+                    <span>
+                      Login to borrow
+                    </span>
+                  </Button>
+
+                )}
               </div>
             </div>
           </div>
@@ -200,7 +207,7 @@ const BookDetail = () => {
 
               <label htmlFor="address">Address</label>
               <Input
-              value={address}
+                value={address}
                 onChange={(e) => setAddress(e.target.value)}
                 type="text"
                 placeholder="Address"
@@ -208,12 +215,10 @@ const BookDetail = () => {
               />
 
               <DialogFooter>
-               
                 <Button variant="gradient" color="green" type="submit">
                   <span>Borrow</span>
                 </Button>
 
-                
                 <Button
                   variant="text"
                   color="red"
@@ -221,8 +226,7 @@ const BookDetail = () => {
                   className="mr-1"
                 >
                   <span>Cancel</span>
-                  </Button>
-
+                </Button>
               </DialogFooter>
             </form>
           </DialogBody>

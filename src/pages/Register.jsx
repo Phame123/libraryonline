@@ -34,6 +34,8 @@ export function Register() {
         email,
         password
       );
+
+      localStorage.setItem( "user", JSON.stringify(userCredential.user));
       const user = userCredential.user;
       await setDoc(doc(db, "users", user.uid), {
         name,
@@ -42,7 +44,7 @@ export function Register() {
         uid: user.uid,
       });
       setIsLoading(false);
-      navigate("/login");
+      navigate("/");
     } catch (error) {
       setIsLoading(false);
       alert(error.message);
