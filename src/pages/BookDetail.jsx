@@ -148,6 +148,9 @@ const BookDetail = () => {
                     )}
                   </span>
                 </div>
+                <h1 class="font-bold">
+                  Description
+                </h1>
                 <p class="leading-relaxed">{book?.description}</p>
                 <div class="flex mt-6 items-center pb-5 border-b-2 border-gray-100 mb-5">
                   <div class="flex ml-6 items-center">
