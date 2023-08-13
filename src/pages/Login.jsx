@@ -21,23 +21,24 @@ export function Login() {
 
 
      const handleLogin = async (e) => {
-       e.preventDefault();
+      e.preventDefault()
        setIsLoading(true);
+
        try{
           const userCredential = await signInWithEmailAndPassword(
             auth,
             email,
             password
           );
+          localStorage.setItem("user", JSON.stringify(userCredential.user));
           const user = userCredential.user;
 
           //save to localstorage
-
-          localStorage.setItem("user",JSON.stringify(user));
-          
-
+          localStorage.setItem("user", JSON.stringify(user));
           setIsLoading(false);
+          alert("Login successful");
           navigate("/");
+
         }catch(error){
           setIsLoading(false);
           alert(error.message);

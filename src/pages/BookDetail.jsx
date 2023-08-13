@@ -2,7 +2,6 @@ import { doc, getDoc, updateDoc, setDoc, arrayUnion, addDoc, collection, onSnaps
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { db } from "../firebase/config";
-
 import {
   Button,
   Dialog,
@@ -11,6 +10,7 @@ import {
   DialogFooter,
   Input,
 } from "@material-tailwind/react";
+
 
 const BookDetail = () => {
   const { id } = useParams();
@@ -30,6 +30,15 @@ const BookDetail = () => {
     setCurrentUser(user);
   }, []);
 
+
+  //get user details from localstorage
+  useEffect(() => {
+
+    const user = JSON.parse(localStorage.getItem("user"));
+    setCurrentUser(user);
+  }, []);
+
+ // console.log('this',currentUser.email);
 
   //fetch book from firestore using title
 
@@ -54,47 +63,49 @@ const BookDetail = () => {
 
  const handleBorrow = async (e) => {
    e.preventDefault();
-   try {
-     const docRef = doc(db, "books", id);
-     const docSnap = await getDoc(docRef);
-     const book = docSnap.data();
-     if (book.copies > 0) {
-       await updateDoc(docRef, {
-         copies: book.copies - 1,
-       });
+   console.log("borrowing book");
+   //send data to firestore
+    try {
+      const docRef = await addDoc(collection(db, "borrowedBooks"), {
+        fullName,
+        address,
+        title: book.title,
+        id:book.id,
+        author: book.author,
+        ISBN: book.ISBN,
+        imageUrl: book.imageUrl,
+        category: book.category,
+        email: currentUser.email,
+       // phone: currentUser.phone,
+       // email: currentUser.email,
 
-       // Borrower's information
-       const borrowerData = {
-         // Change to the actual user's UID
-         // Change to the actual book's ID
-         borrowedAt: new Date(),
+        
+        borrowedDate: new Date(),
 
-         //return date is 72 hours after current date
+        //three days from borrowed date
+        returnDate: new Date(new Date().setDate(new Date().getDate() + 3)),
 
-         name: fullName,
-         email: currentUser.email,
-         phone: currentUser.phone,
-         address: address,
-         author: book.author,
-         borrowedAt: new Date(),
-         returnDate: new Date(Date.now() + 72 * 60 * 60 * 1000), // 72 hours in milliseconds
-       };
+        
+      });
 
-       //const borrowHistoryRef = doc(db, "borrowHistory"); // Assuming "borrowHistory" is your collection name
-       //await setDoc(borrowHistoryRef, borrowerData);
+      //update book copies
+      const bookRef = doc(db, "books", id);
+      await updateDoc(bookRef, {
+        copies: book.copies - 1,
+      });
 
-       alert("Book borrowed successfully. You have 72 hours to return it");
-        setOpen(false);
-     } else {
-       alert("Book not available");
-     }
-   } catch (err) {
-     console.log(err);
-   }
- };
+      //save the document data to localstorage
 
+      localStorage.setItem("borrowedBook", JSON.stringify(docRef));      
 
-
+      console.log("Document written with ID: ", docRef.id);
+      alert("Book borrowed successfully");
+      handleOpen();
+    }
+    catch (e) {
+      console.error("Error adding document: ", e);
+    }
+  };
 
 
   return (

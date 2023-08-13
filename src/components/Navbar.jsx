@@ -1,5 +1,5 @@
 //import { Navbar } from "@material-tailwind/react";
-import { signOut } from "firebase/auth";
+import { onAuthStateChanged, signOut } from "firebase/auth";
 import React, { useState, useEffect } from "react";
 import { AiOutlineMenu, AiOutlineClose } from "react-icons/ai";
 import { FaShoppingCart } from "react-icons/fa";
@@ -12,12 +12,21 @@ const Navbar = () => {
   const router = useNavigate();
   const [user, setUser] = useState(null);
 
+
   useEffect(() => {
-    const user = localStorage.getItem("user");
-    if (user) {
-      setUser(JSON.parse(user));
-    }
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      setUser(user);
+      localStorage.setItem("user", JSON.stringify(user));
+    });
+
+    return () => {
+      unsubscribe();
+    };
   }, []);
+
+
+ 
+
 
  
  const handleLogout = () => {
@@ -63,6 +72,11 @@ const Navbar = () => {
               <Link to={"/books"}>
                 <button class="inline-flex items-center bg-gray-400 border-0 py-1 px-3 focus:outline-none hover:bg-gray-200 text-black hover:text-black rounded text-base mt-4 md:mt-0 mr-4">
                   Find Books
+                </button>
+              </Link>
+              <Link to={"/history"}>
+                <button class="inline-flex items-center bg-gray-400 border-0 py-1 px-3 focus:outline-none hover:bg-gray-200 text-black hover:text-black rounded text-base mt-4 md:mt-0 mr-4">
+                  My History
                 </button>
               </Link>
             </div>
